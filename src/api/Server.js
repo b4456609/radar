@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const SERVER = 'http://192.168.5.103:3002'
+const SERVER = 'https://radar-backend-radar.a3c1.starter-us-west-1.openshiftapps.com'
 export function getListApi() {
   return fetch(`${SERVER}/list`)
     .then(res => res.json());
