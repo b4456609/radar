@@ -2,11 +2,10 @@
   "name": "weather",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://b4456609.github.io/radar",
   "dependencies": {
-    "@material/dialog": "^0.4.0",
-    "@material/linear-progress": "^0.1.7",
-    "@material/slider": "^0.2.3",
     "axios": "^0.16.2",
+    "gh-pages": "^1.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.6",
@@ -16,6 +15,8 @@
     "redux-thunk": "^2.2.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
