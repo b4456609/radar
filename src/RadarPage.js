@@ -63,8 +63,8 @@ export default connect(state => {
     })
   }
   pic.sort((a, b) => getDateFromString(a.name) - getDateFromString(b.name))
+  console.log(pic)
   return {
-    picList: state.picList,
     pic,
     duration: state.radar.duration,
     interval: state.radar.interval,

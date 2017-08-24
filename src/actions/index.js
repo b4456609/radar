@@ -3,6 +3,10 @@ import { getListApi, getImg, getImgurListApi, fetchImg } from '../api/Server'
 export function getList() {
   return function (dispatch, getState) {
     getImgurListApi()
+      .then((data) => data.map(item => {
+        item.link = item.link.replace('http', 'https')
+        return item
+      }))
       .then((data) => {
         dispatch({
           type: 'GET_PICLIST_SUCCESS',
@@ -32,9 +36,9 @@ export function getImage() {
     let downloadList = getState().picList
       .slice()
       .reverse()
+      .sort((a, b) => getDateFromString(b.name) - getDateFromString(a.name))
       .slice(0, getState().radar.duration * 6)
       .filter((item) => Object.keys(getState().saveImage.image).indexOf(item.name) === -1)
-      .sort((a, b) => getDateFromString(b.name) - getDateFromString(a.name));
 
     if (downloadList.length === 0) return;
 
