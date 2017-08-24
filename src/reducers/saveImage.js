@@ -9,7 +9,7 @@ const saveImageInitialState = {
 const saveImage = (state = saveImageInitialState, action) => {
   switch (action.type) {
     case 'ADD_IMAGE_URL':
-      return { ...state, currentNumber: state.currentNumber + 1, loaded: 0,image: { [action.item]: action.url, ...state.image } }
+      return { ...state, currentNumber: state.currentNumber + 1, loaded: 0,image: { [action.item.name]: action.url, ...state.image } }
     case 'SET_DOWONLOAD_OVERVIEW':
       return { ...state, number: action.number, currentNumber: 0, isLoading: true }
     case 'DOWNLOAD_STATUS':

@@ -1,8 +1,8 @@
-import { getListApi, getImg } from '../api/Server'
+import { getListApi, getImg, getImgurListApi, fetchImg } from '../api/Server'
 
 export function getList() {
   return function (dispatch, getState) {
-    getListApi()
+    getImgurListApi()
       .then((data) => {
         dispatch({
           type: 'GET_PICLIST_SUCCESS',
@@ -33,7 +33,8 @@ export function getImage() {
       .slice()
       .reverse()
       .slice(0, getState().radar.duration * 6)
-      .filter((item) => Object.keys(getState().saveImage.image).indexOf(item) === -1).sort((a, b) => getDateFromString(b) - getDateFromString(a));
+      .filter((item) => Object.keys(getState().saveImage.image).indexOf(item.name) === -1)
+      .sort((a, b) => getDateFromString(b.name) - getDateFromString(a.name));
 
     if (downloadList.length === 0) return;
 
@@ -43,7 +44,7 @@ export function getImage() {
     })
 
     for (let item of downloadList) {
-      let url = await getImg(item, (loaded, total) => { dispatch(downloadStatus(loaded, total)) })
+      let url = await fetchImg(item.link, (loaded, total) => { dispatch(downloadStatus(loaded, total)) })
       dispatch({ type: 'ADD_IMAGE_URL', url, item })
     }
 
