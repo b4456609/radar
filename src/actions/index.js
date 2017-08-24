@@ -23,13 +23,17 @@ export const setRadarConfig = (duration, interval) => {
   }
 }
 
+function getDateFromString(time) {
+  return new Date(time.substring(12, 16), time.substring(16, 18), time.substring(18, 20), time.substring(20, 22), time.substring(22, 24))
+}
+
 export function getImage() {
   return async (dispatch, getState) => {
     let downloadList = getState().picList
       .slice()
       .reverse()
       .slice(0, getState().radar.duration * 6)
-      .filter((item) => Object.keys(getState().saveImage.image).indexOf(item) === -1);
+      .filter((item) => Object.keys(getState().saveImage.image).indexOf(item) === -1).sort((a, b) => getDateFromString(b) - getDateFromString(a));
 
     if (downloadList.length === 0) return;
 

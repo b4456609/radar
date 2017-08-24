@@ -9,7 +9,6 @@ class RadarSettingDialog extends Component {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this)
-    console.log(props)
   }
   componentDidMount() {
     dialog = new MDCDialog(this.refs.radarSetting);

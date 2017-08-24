@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 const d3 = window.d3;
 
 const PIC_PIXEL = 540;
+
 function centerX() {
   return (window.innerWidth - imageSize()) / 2
 }
@@ -14,7 +15,7 @@ function imageSize() {
   return Math.min(size, PIC_PIXEL)
 }
 
-function cycleNext(list, index) {
+function cycleNext(index) {
   if (list.length - 1 > index) return index + 1;
   return 0;
 }
@@ -24,23 +25,40 @@ function getDisplayList(list, duration) {
   return list.filter((item, i) => (list.length - i) < duration * 6)
 }
 
-function getInterval(svg, i) {
+function compareList(a1, a2) {
+  return a1.length === a2.length && a1.every((v, i) => v.name === a2[i].name)
+}
+
+function getInterval(svg) {
   return setInterval(function () {
+    if (list.length === 0) {
+      list = tempList;
+    }
+    if (i === list.length - 1 && !compareList(tempList, list)) {
+      svg.select('image').attr("xlink:href", list[i].url)
+      let time = list[i].name.substring(20, 24);
+      root.select('text').text(time.slice(0, 2) + ':' + time.slice(2, 4))
+      list = tempList;
+      clearInterval(interval)
+      interval = getInterval(svg, i)
+      i = cycleNext(i);
+    }
     if (list.length > i) {
       svg.select('image').attr("xlink:href", list[i].url)
       let time = list[i].name.substring(20, 24);
-      root.select('text').text(time.slice(0,2) + ':' + time.slice(2,4))
-      i = cycleNext(list, i);
+      root.select('text').text(time.slice(0, 2) + ':' + time.slice(2, 4))
+      i = cycleNext(i);
     }
   }, picInterval * 1000);
 }
+let i = 0;
 
+let tempList = [];
 let list = [];
 let root = null;
 let svg = null;
 let interval = null;
 let picInterval = 0.5;
-let i = 0;
 
 class ImageContainer extends Component {
   componentDidMount() {
@@ -71,17 +89,18 @@ class ImageContainer extends Component {
       .style('stroke', '#fff')
       .style('stroke-width', '1px');
 
-    list = getDisplayList(this.props.list, this.props.duration)
+    tempList = getDisplayList(this.props.list, this.props.duration)
     picInterval = this.props.interval;
-    interval = getInterval(svg, i)
+    interval = getInterval(svg)
   }
 
   componentWillUpdate(nextProps, nextState) {
-    list = getDisplayList(nextProps.list, nextProps.duration)
+    tempList = getDisplayList(nextProps.list, nextProps.duration)
     picInterval = nextProps.interval;
-    clearInterval(interval)
-    interval = getInterval(svg, i)
-
+    if (this.props.interval === nextProps.interval) {
+      clearInterval(interval)
+      interval = getInterval(svg)
+    }
   }
 
   componentWillUnmount() {
