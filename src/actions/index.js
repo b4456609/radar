@@ -4,7 +4,8 @@ export function getList() {
   return function (dispatch, getState) {
     getImgurListApi()
       .then((data) => data.map(item => {
-        item.link = item.link.replace('http', 'https')
+        if (item.link.indexOf('https') === -1)
+          item.link = item.link.replace('http', 'https')
         return item
       }))
       .then((data) => {

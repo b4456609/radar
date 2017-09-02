@@ -97,7 +97,7 @@ class ImageContainer extends Component {
   componentWillUpdate(nextProps, nextState) {
     tempList = getDisplayList(nextProps.list, nextProps.duration)
     picInterval = nextProps.interval;
-    if (this.props.interval === nextProps.interval) {
+    if (this.props.interval !== nextProps.interval) {
       clearInterval(interval)
       interval = getInterval(svg)
     }
