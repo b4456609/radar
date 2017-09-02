@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { getList } from './actions'
 import ImageContainer from './components/ImageContainer'
 import DownloadIndicator from './components/DownloadIndicator'
+import SnackBar from './components/SnackBar'
 
 const REFRESH_LIST_INTERVAL = 1000 * 60 * 5
 
@@ -43,7 +44,9 @@ class RadarPage extends Component {
           width: '100%',
           top: 0,
           left: 0,
-        }} > <DownloadIndicator />
+        }} >
+          <DownloadIndicator />
+          <SnackBar />
         </div>
       </div>
     );
@@ -63,7 +66,6 @@ export default connect(state => {
     })
   }
   pic.sort((a, b) => getDateFromString(a.name) - getDateFromString(b.name))
-  console.log(pic)
   return {
     pic,
     duration: state.radar.duration,

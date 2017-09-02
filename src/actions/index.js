@@ -1,4 +1,5 @@
-import { getListApi, getImg, getImgurListApi, fetchImg } from '../api/Server'
+import { getImgurListApi, fetchImg } from '../api/Server'
+import { showSnackBar } from '../components/SnackBar'
 
 export function getList() {
   return function (dispatch, getState) {
@@ -32,14 +33,22 @@ function getDateFromString(time) {
   return new Date(time.substring(12, 16), time.substring(16, 18), time.substring(18, 20), time.substring(20, 22), time.substring(22, 24))
 }
 
+function duration2ImageNumber(duration) {
+  return duration * 6;
+}
+
+function isExistInState(image, item) {
+  return Object.keys(image).indexOf(item.name) === -1
+}
+
 export function getImage() {
   return async (dispatch, getState) => {
     let downloadList = getState().picList
       .slice()
       .reverse()
       .sort((a, b) => getDateFromString(b.name) - getDateFromString(a.name))
-      .slice(0, getState().radar.duration * 6)
-      .filter((item) => Object.keys(getState().saveImage.image).indexOf(item.name) === -1)
+      .slice(0, duration2ImageNumber(getState().radar.duration))
+      .filter((item) => isExistInState(getState().saveImage.image, item))
 
     if (downloadList.length === 0) return;
 
@@ -49,20 +58,16 @@ export function getImage() {
     })
 
     for (let item of downloadList) {
-      let url = await fetchImg(item.link, (loaded, total) => { dispatch(downloadStatus(loaded, total)) })
-      dispatch({ type: 'ADD_IMAGE_URL', url, item })
+      await fetchImg(item.link)
+        .then((url) => { dispatch({ type: 'ADD_IMAGE_URL', url, item }) })
+        .catch(reason => {
+          showSnackBar('Error Downlaod Image', () => { dispatch(getImage()) });
+        })
     }
 
     dispatch({
       type: 'FINISH_LOAD_IMAGE',
       number: downloadList.length
     })
-  }
-}
-
-function downloadStatus(loaded, total) {
-  return {
-    type: 'DOWNLOAD_STATUS',
-    loaded, total
   }
 }

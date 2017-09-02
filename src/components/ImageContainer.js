@@ -15,6 +15,14 @@ function imageSize() {
   return Math.min(size, PIC_PIXEL)
 }
 
+let i = 0;
+let tempList = [];
+let list = [];
+let root = null;
+let svg = null;
+let interval = null;
+let picInterval = 0.5;
+
 function cycleNext(index) {
   if (list.length - 1 > index) return index + 1;
   return 0;
@@ -25,8 +33,29 @@ function getDisplayList(list, duration) {
   return list.filter((item, i) => (list.length - i) < duration * 6)
 }
 
-function compareList(a1, a2) {
+function isSameList(a1, a2) {
   return a1.length === a2.length && a1.every((v, i) => v.name === a2[i].name)
+}
+
+function isLastItem() {
+  return i === list.length - 1;
+}
+
+function updateTime() {
+  let time = list[i].name.substring(20, 24);
+  root.select('text')
+    .attr('x', window.innerWidth - 90)
+    .text(time.slice(0, 2) + ':' + time.slice(2, 4));
+}
+
+function updateImage() {
+  svg.select('image').attr("xlink:href", list[i].url)
+}
+
+function updateInterval() {
+  list = tempList;
+  clearInterval(interval)
+  interval = getInterval(svg, i)
 }
 
 function getInterval(svg) {
@@ -34,31 +63,19 @@ function getInterval(svg) {
     if (list.length === 0) {
       list = tempList;
     }
-    if (i === list.length - 1 && !compareList(tempList, list)) {
-      svg.select('image').attr("xlink:href", list[i].url)
-      let time = list[i].name.substring(20, 24);
-      root.select('text').text(time.slice(0, 2) + ':' + time.slice(2, 4))
-      list = tempList;
-      clearInterval(interval)
-      interval = getInterval(svg, i)
+    if (isLastItem() && !isSameList(tempList, list)) {
+      updateImage();
+      updateTime();
+      updateInterval();
       i = cycleNext(i);
     }
-    if (list.length > i) {
-      svg.select('image').attr("xlink:href", list[i].url)
-      let time = list[i].name.substring(20, 24);
-      root.select('text').text(time.slice(0, 2) + ':' + time.slice(2, 4))
+    else if (list.length > i) {
+      updateImage();
+      updateTime();
       i = cycleNext(i);
     }
   }, picInterval * 1000);
 }
-let i = 0;
-
-let tempList = [];
-let list = [];
-let root = null;
-let svg = null;
-let interval = null;
-let picInterval = 0.5;
 
 class ImageContainer extends Component {
   componentDidMount() {
@@ -67,9 +84,10 @@ class ImageContainer extends Component {
       .attr("width", "100%")
       .attr("height", "100%")
 
-    svg = root.call(d3.zoom().on("zoom", function () {
-      svg.attr("transform", d3.event.transform)
-    }))
+    svg = root.call(d3.zoom()
+      .on("zoom", function () {
+        svg.attr("transform", d3.event.transform)
+      }))
       .append("g")
 
     svg.append("image")

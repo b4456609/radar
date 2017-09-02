@@ -10,19 +10,13 @@ export function getPicUrl(filename) {
   return `${SERVER}/pic/${filename}`
 }
 
-export function getImg(filename, downloadStatus) {
-  return fetchImg(getPicUrl(filename), downloadStatus)
+export function getImg(filename) {
+  return fetchImg(getPicUrl(filename))
 }
 
-export function fetchImg(url, downloadStatus){
-  return axios.get(url, {
-    responseType: 'blob',
-    onDownloadProgress: function (progressEvent) {
-      let { loaded, total } = progressEvent
-      downloadStatus(loaded, total)
-    },
-  })
-    .then((res) => res.data)
+export function fetchImg(url){
+  return fetch(url)
+    .then((res) => res.blob())
     .then(data => URL.createObjectURL(data))
 }
 

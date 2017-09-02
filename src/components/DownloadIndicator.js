@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 const MDCLinearProgress = window.mdc.linearProgress.MDCLinearProgress;
 let linearProgress = null;
 
-function getProgress(number, currentNumber, loaded, total) {
-  return currentNumber / number + (loaded / total) / number
+function getProgress(number, currentNumber) {
+  return currentNumber / number
 }
 function getBuffer(number, currentNumber) {
   return (currentNumber + 1) / number
@@ -16,15 +16,15 @@ class DownloadIndicator extends Component {
     linearProgress.progress = 0;
     linearProgress.buffer = 0;
     // linearProgress.close();
-    let { number, currentNumber, loaded, total, isLoading } = this.props;
+    let { number, currentNumber, isLoading } = this.props;
     if (isLoading) {
-      linearProgress.progress = getProgress(number, currentNumber, loaded, total);
+      linearProgress.progress = getProgress(number, currentNumber);
       linearProgress.buffer = getBuffer(number, currentNumber);
     }
   }
 
   componentWillUpdate(nextProps, nextState) {
-    let { number, currentNumber, loaded, total, isLoading } = nextProps;
+    let { number, currentNumber, isLoading } = nextProps;
     if (this.props.isLoading && !isLoading) {
       linearProgress.close();
     }
@@ -33,7 +33,7 @@ class DownloadIndicator extends Component {
       linearProgress.open();
     }
     if (isLoading) {
-      linearProgress.progress = getProgress(number, currentNumber, loaded, total);
+      linearProgress.progress = getProgress(number, currentNumber);
       linearProgress.buffer = getBuffer(number, currentNumber);
     }
 
@@ -59,14 +59,11 @@ class DownloadIndicator extends Component {
 export default connect(state => {
   let { isLoading,
     number,
-    currentNumber,
-    loaded,
-    total } = state.saveImage;
+    currentNumber
+   } = state.saveImage;
   return {
     isLoading,
     number,
     currentNumber,
-    loaded,
-    total
   }
 })(DownloadIndicator);
